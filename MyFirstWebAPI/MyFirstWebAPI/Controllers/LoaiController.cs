@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyFirstWebAPI.Data;
@@ -21,8 +22,15 @@ namespace MyFirstWebAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var dsLoai = _context.Loais.ToList(); 
-            return Ok(dsLoai);
+            try
+            {
+                var dsLoai = _context.Loais.ToList();
+                return Ok(dsLoai);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("{id}")]
@@ -39,6 +47,7 @@ namespace MyFirstWebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult CreateNew(LoaiVM model)
         {
             try
@@ -51,7 +60,7 @@ namespace MyFirstWebAPI.Controllers
                 _context.Add(loai);
                 _context.SaveChanges();
 
-                return Ok(loai);
+                return StatusCode(StatusCodes.Status201Created, loai);
             }
             catch
             {
@@ -60,7 +69,7 @@ namespace MyFirstWebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Edit(int id, LoaiVM model)
+        public IActionResult UpdateLoaiById(int id, LoaiVM model)
         {
             try
             {
@@ -73,7 +82,8 @@ namespace MyFirstWebAPI.Controllers
                 {
                     loai.TenLoai = model.TenLoai;
                     _context.SaveChanges();
-                    return Ok(loai);
+
+                    return NoContent();
                 }
             }
             catch
@@ -83,7 +93,7 @@ namespace MyFirstWebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteLoaiById(int id)
         {
             try
             {
@@ -96,10 +106,7 @@ namespace MyFirstWebAPI.Controllers
                 {
                     _context.Remove(loai);
                     _context.SaveChanges();
-                    return Ok(new
-                    {
-                        Des = "Remove Success"
-                    });
+                    return StatusCode(StatusCodes.Status200OK);
                 }
             }
             catch
