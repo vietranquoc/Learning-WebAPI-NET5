@@ -2,7 +2,7 @@
 
 namespace MyFirstWebAPI.Models
 {
-    public class LoaiVM
+    public class LoaiModel
     {
         [Required]
         [MaxLength(50)]

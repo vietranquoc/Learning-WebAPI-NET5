@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyFirstWebAPI.Data;
+using MyFirstWebAPI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +60,9 @@ namespace MyFirstWebAPI
             });
 
             //Rest of the code
+            //services.AddScoped<ILoaiRepository, LoaiRepository>();
+            services.AddScoped<ILoaiRepository, LoaiRepositoryInMemory>();
+
 
             services.AddSwaggerGen(c =>
             {
