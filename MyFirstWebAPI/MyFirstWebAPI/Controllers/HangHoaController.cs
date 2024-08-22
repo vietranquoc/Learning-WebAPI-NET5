@@ -1,102 +1,53 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyFirstWebAPI.Models;
+using MyFirstWebAPI.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
 
 namespace MyFirstWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class HangHoaController : ControllerBase
-    {    
-        public static List<HangHoa> HangHoas = new List<HangHoa>();
+    {
+        private readonly IHangHoaRepository _hangHoaRepository;
 
-        [HttpGet]
-        public IActionResult GetAll()
+        public HangHoaController(IHangHoaRepository hangHoaRepository)
         {
-            return Ok(HangHoas);
+            _hangHoaRepository = hangHoaRepository;
         }
 
-        [HttpGet("/{id}")]
-        public IActionResult GetByID(string id)
+        [HttpGet]
+        //page = 1: set gia tri mac dinh cua page la 1
+        public IActionResult GetAll(string search, double? from, double? to, string sortBy, int page = 1)
+        {
+            return Ok(_hangHoaRepository.GetAll(search, from, to, sortBy, page));
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(string id)
         {
             try
             {
-                var hangHoa = HangHoas.SingleOrDefault(hh => hh.MaHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
-                {
-                    return NotFound();
-                }
-                return Ok(hangHoa);
+                return Ok(_hangHoaRepository.GetByid(id));
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest(); 
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPost]
-        public IActionResult Create(HangHoaVM hangHoaVM)
-        {
-            var hanghoa = new HangHoa
-            {
-                MaHangHoa = Guid.NewGuid(),
-                TenHangHoa = hangHoaVM.TenHangHoa,
-                DonGia = hangHoaVM.DonGia
-            };
-
-            HangHoas.Add(hanghoa);
-            return Ok(new
-            {
-                Success = true,
-                Data = hanghoa
-            });
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Edit(string id, HangHoaVM hangHoaEdit)
+        public IActionResult CreateNew(HangHoaModel model)
         {
             try
             {
-                var hangHoa = HangHoas.SingleOrDefault(hh => hh.MaHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    //UPDATE
-                    hangHoa.TenHangHoa = hangHoaEdit.TenHangHoa;
-                    hangHoa.DonGia = hangHoaEdit.DonGia;
-
-                    return Ok(hangHoa);
-                }
-            }
-            catch
+                var data = _hangHoaRepository.Add(model);
+                return StatusCode(StatusCodes.Status201Created, data);
+            } 
+            catch (Exception ex)
             {
-                return BadRequest();
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult Remove(string id)
-        {
-            try
-            {
-                var hangHoa = HangHoas.SingleOrDefault(hh => hh.MaHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
-                {
-                    return NotFound();
-                }
-                HangHoas.Remove(hangHoa);
-                return Ok();
-            }
-            catch
-            {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
     }

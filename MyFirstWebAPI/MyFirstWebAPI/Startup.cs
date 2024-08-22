@@ -62,6 +62,7 @@ namespace MyFirstWebAPI
             //Rest of the code
             //services.AddScoped<ILoaiRepository, LoaiRepository>();
             services.AddScoped<ILoaiRepository, LoaiRepositoryInMemory>();
+            services.AddScoped<IHangHoaRepository, HangHoaRepository>();
 
 
             services.AddSwaggerGen(c =>
