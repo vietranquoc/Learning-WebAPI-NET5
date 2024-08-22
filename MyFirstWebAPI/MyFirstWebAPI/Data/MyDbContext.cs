@@ -11,16 +11,17 @@ namespace MyFirstWebAPI.Data
         public DbSet<Loai> Loais { get; set; }
         public DbSet<DonHang> DonHangs { get; set; }
         public DbSet<DonHangChiTiet> DonHangChiTiets { get; set; }
+        public DbSet<NguoiDung> NguoiDungs { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DonHang>(e =>
+            modelBuilder.Entity<DonHang>(entity =>
             {
-                e.ToTable("DonHang");
-                e.HasKey(dh => dh.MaDh);
-                e.Property(dh => dh.NgayDat).HasDefaultValueSql("getutcdate()");
-                e.Property(dh => dh.NguoiNhan).IsRequired().HasMaxLength(100);
+                entity.ToTable("DonHang");
+                entity.HasKey(dh => dh.MaDh);
+                entity.Property(dh => dh.NgayDat).HasDefaultValueSql("getutcdate()");
+                entity.Property(dh => dh.NguoiNhan).IsRequired().HasMaxLength(100);
             });
 
             modelBuilder.Entity<DonHangChiTiet>(entity =>
@@ -37,6 +38,12 @@ namespace MyFirstWebAPI.Data
                     .WithMany(e => e.DonHangChiTiets)
                     .HasForeignKey(e => e.MaHh)
                     .HasConstraintName("FK_DonHangCT_HangHoa");
+            });
+
+            modelBuilder.Entity<NguoiDung>(entity =>
+            {
+                entity.HasIndex(e => e.UserName).IsUnique();
+                entity.Property(e => e.HoTen).IsRequired().HasMaxLength(150);
             });
         }
     }

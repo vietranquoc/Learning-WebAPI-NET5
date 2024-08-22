@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyFirstWebAPI.Data;
+using MyFirstWebAPI.Models;
 using MyFirstWebAPI.Services;
 using System;
 using System.Collections.Generic;
@@ -40,10 +41,13 @@ namespace MyFirstWebAPI
                 option.UseSqlServer(Configuration.GetConnectionString("MyDB"));
             });
 
+            services.Configure<AppSetting>(Configuration.GetSection("AppSettings"));
+
             var secretKey = Configuration["AppSettings:SecretKey"];
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(otp =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(otp =>
             {
                 otp.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -84,6 +88,8 @@ namespace MyFirstWebAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

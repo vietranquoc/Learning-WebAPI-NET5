@@ -20,7 +20,7 @@ namespace MyFirstWebAPI.Services
             {
                 TenLoai = loai.TenLoai,
             };
-            _context.Add(loai);
+            _context.Add(_loai);
             _context.SaveChanges();
 
             return new LoaiVM

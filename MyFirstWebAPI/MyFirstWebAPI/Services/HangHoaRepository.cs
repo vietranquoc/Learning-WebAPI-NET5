@@ -12,6 +12,7 @@ namespace MyFirstWebAPI.Services
     {
         private readonly MyDbContext _context;
 
+        //5 items per page
         public static int PAGE_SIZE { get; set; } = 5;
 
         public HangHoaRepository(MyDbContext context)
@@ -40,7 +41,7 @@ namespace MyFirstWebAPI.Services
                 TenHangHoa = data.TenHh,
                 MoTa = data.MoTa,
                 DonGia = data.DonGia,
-                //TenLoai = data.Loai.TenLoai,
+                TenLoai = data.Loai?.TenLoai,
             };
         }
 
